@@ -1,0 +1,73 @@
+---
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: YAML lint
+        run: |
+          pip install yamllint
+          yamllint -c .yamllint.yml .
+
+      - name: Markdown lint
+        run: npx markdownlint-cli "**/*.md" --config .markdownlint.json
+
+      - name: Compose config validation
+        run: |
+          cp .env.example .env
+          docker compose config
+
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  smoke-test:
+    name: Smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'workflow_dispatch'
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env
+        run: |
+          cp .env.example .env
+          echo "SHARED_DB_PASSWORD=ci-test-password" >> .env
+
+      - name: Initialize data directories
+        run: make init
+
+      - name: Start the resource plane stack
+        run: make up
+
+      - name: Wait for services to become healthy
+        run: ./scripts/wait-healthy.sh
+
+      - name: Run smoke tests
+        run: ./scripts/smoke-test.sh
