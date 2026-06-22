@@ -1,0 +1,16 @@
+---
+# uFawkesRes Traefik Configuration
+# Minimal ingress gateway with Docker provider and ping health endpoint.
+
+providers:
+  docker:
+    exposedByDefault: false
+
+entryPoints:
+  web:
+    address: ":80"
+
+log:
+  level: INFO
+
+ping: {}
