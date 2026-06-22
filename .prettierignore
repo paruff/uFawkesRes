@@ -1,0 +1,66 @@
+# Prettier ignore file
+# Exclude files that prettier can't parse
+
+# Environment files
+.env*
+!.env.example
+
+# Git files
+.gitignore
+.gitattributes
+
+# Config files
+.gitleaks.toml
+.secrets.baseline
+.markdownlint.json
+
+# Docker files
+Dockerfile
+docker-compose*.yml
+compose.yaml
+
+# Shell scripts
+*.sh
+*.bash
+
+# Python files
+*.py
+*.txt
+*.ini
+*.cfg
+
+# Go files
+*.go
+
+# TypeScript/JavaScript
+*.ts
+*.tsx
+*.js
+*.jsx
+
+# Binary files
+*.png
+*.jpg
+*.gif
+*.ico
+*.svg
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build artifacts
+_site/
+dist/
+build/
+node_modules/
+
+# Data files
+*.log
+*.csv
+*.json
+!package.json
+
+# Acceptance test reports
+tests/acceptance/**/reports/*
