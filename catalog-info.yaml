@@ -1,0 +1,194 @@
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: ufawkesres
+  title: uFawkesRes
+  description: >
+    Resource plane of the Fawkes IDP family. Provides shared infrastructure
+    services — Traefik ingress gateway, Authelia SSO authentication, PostgreSQL
+    database, and Valkey cache — wired together on the fawkes-backbone-net
+    bridge network. Downstream planes connect via this shared network.
+  annotations:
+    github.com/project-slug: paruff/uFawkesRes
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - resources
+    - infrastructure
+    - idp
+    - traefik
+    - authelia
+    - postgresql
+    - valkey
+    - fawkes
+  links:
+    - url: https://github.com/paruff/uFawkesRes
+      title: GitHub Repository
+      icon: github
+    - url: https://github.com/paruff/fawkes
+      title: Fawkes IDP (Parent)
+      icon: github
+spec:
+  type: resources
+  owner: paruff
+  lifecycle: production
+  dependsOn:
+    - system:ufawkesobs
+    - system:ufawkespipe
+    - system:ufawkesdevx
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ingress-gateway
+  title: Ingress Gateway
+  description: >
+    Traefik v3.0 reverse proxy acting as the single ingress point for all
+    Fawkes IDP planes. Routes traffic to downstream services based on host
+    and path rules.
+  annotations:
+    github.com/project-slug: paruff/uFawkesRes
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - ingress
+    - traefik
+    - reverse-proxy
+  links:
+    - url: https://github.com/paruff/uFawkesRes
+      title: GitHub Repository
+spec:
+  type: service
+  lifecycle: production
+  owner: paruff
+  system: ufawkesres
+  providesApis: []
+  dependsOn:
+    - component:sso-auth
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: sso-auth
+  title: SSO Authentication
+  description: >
+    Authelia-based single sign-on authentication service. Provides 2FA,
+    LDAP integration, and session management for the Fawkes IDP family.
+    Backed by the shared PostgreSQL database.
+  annotations:
+    github.com/project-slug: paruff/uFawkesRes
+  tags:
+    - sso
+    - authentication
+    - authelia
+    - security
+  links:
+    - url: https://github.com/paruff/uFawkesRes
+      title: GitHub Repository
+spec:
+  type: service
+  lifecycle: production
+  owner: paruff
+  system: ufawkesres
+  providesApis: []
+  dependsOn:
+    - resource:ufawkesres-postgres
+    - resource:ufawkesres-cache
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: shared-postgres
+  title: Shared PostgreSQL
+  description: >
+    PostgreSQL 16 Alpine database shared across Fawkes IDP planes. Primarily
+    backs Authelia SSO, but available for any downstream service that needs
+    relational storage.
+  annotations:
+    github.com/project-slug: paruff/uFawkesRes
+  tags:
+    - database
+    - postgresql
+    - relational
+  links:
+    - url: https://github.com/paruff/uFawkesRes
+      title: GitHub Repository
+spec:
+  type: service
+  lifecycle: production
+  owner: paruff
+  system: ufawkesres
+  providesApis: []
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cache-backend
+  title: Cache Backend
+  description: >
+    Valkey 7.2 in-memory data store providing caching, session storage, and
+    rate-limiting support for Fawkes IDP services.
+  annotations:
+    github.com/project-slug: paruff/uFawkesRes
+  tags:
+    - cache
+    - valkey
+    - redis-compatible
+    - in-memory
+  links:
+    - url: https://github.com/paruff/uFawkesRes
+      title: GitHub Repository
+spec:
+  type: service
+  lifecycle: production
+  owner: paruff
+  system: ufawkesres
+  providesApis: []
+---
+# Resource definitions for backing services
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: ufawkesres-postgres
+  title: Shared PostgreSQL Instance
+  description: PostgreSQL 16 Alpine instance serving uFawkesRes
+spec:
+  type: postgresql
+  owner: paruff
+  system: ufawkesres
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: ufawkesres-cache
+  title: Valkey Cache Instance
+  description: Valkey 7.2 in-memory cache instance serving uFawkesRes
+spec:
+  type: valkey
+  owner: paruff
+  system: ufawkesres
+---
+# API definition for external consumers
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: ufawkesres-traefik
+  title: uFawkesRes Traefik Ingress
+  description: >
+    Traefik ingress endpoint for routing HTTP traffic to Fawkes IDP planes.
+    Downstream services configure routing through this gateway.
+  tags:
+    - ingress
+    - traefik
+    - http
+  links:
+    - url: https://github.com/paruff/uFawkesRes
+      title: GitHub Repository
+spec:
+  type: openapi
+  lifecycle: production
+  owner: paruff
+  system: ufawkesres
+  definition:
+    $text: https://doc.traefik.io/traefik/reference/dynamic-configuration/
