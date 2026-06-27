@@ -17,26 +17,26 @@ permissions:
 jobs:
   preflight:
     name: Pre-flight
-    uses: paruff/ufawkespipe/.github/workflows/reusable-preflight.yml@v1.0.0
+    uses: paruff/ufawkespipe/.github/workflows/reusable-preflight.yml@v1.1.0
 
   lint:
     name: Lint
     needs: [preflight]
-    uses: paruff/ufawkespipe/.github/workflows/reusable-lint.yml@v1.0.0
+    uses: paruff/ufawkespipe/.github/workflows/reusable-lint.yml@v1.1.0
     with:
       auto-detect: true
 
   build:
     name: Build & Validate
     needs: [lint]
-    uses: paruff/ufawkespipe/.github/workflows/reusable-build.yml@v1.0.0
+    uses: paruff/ufawkespipe/.github/workflows/reusable-build.yml@v1.1.0
     with:
       fail-on-latest: true
 
   security:
     name: Security Scanning
     needs: [lint]
-    uses: paruff/ufawkespipe/.github/workflows/reusable-security-scanning.yml@v1.0.0
+    uses: paruff/ufawkespipe/.github/workflows/reusable-security-scanning.yml@v1.1.0
     with:
       scan-type: all
       severity-threshold: MEDIUM
@@ -46,7 +46,7 @@ jobs:
   dependency-review:
     name: Dependency Review
     needs: [lint]
-    uses: paruff/ufawkespipe/.github/workflows/reusable-dependency-review.yml@v1.0.0
+    uses: paruff/ufawkespipe/.github/workflows/reusable-dependency-review.yml@v1.1.0
     with:
       fail-on-severity: high
       comment-summary-in-pr: "true"
@@ -54,7 +54,7 @@ jobs:
   tests:
     name: Tests
     needs: [build, security, dependency-review]
-    uses: paruff/ufawkespipe/.github/workflows/reusable-tests.yml@v1.0.0
+    uses: paruff/ufawkespipe/.github/workflows/reusable-tests.yml@v1.1.0
     with:
       test-tiers: "unit,docs"
       python-version: "3.11"
