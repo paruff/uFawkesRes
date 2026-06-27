@@ -34,6 +34,9 @@ Thumbs.db
 tests/acceptance/observability-pipeline/reports/*
 !tests/acceptance/observability-pipeline/reports/.gitkeep
 
+# Node
+node_modules/
+
 # Python
 __pycache__/
 *.py[cod]
