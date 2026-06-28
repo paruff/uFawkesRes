@@ -7,6 +7,6 @@
 users:
   admin:
     displayname: "Administrator"
-    password: "$2b$12$rb3zu9X7Nb8NQiTXpxF1pOgLuZ/q6w.eMUI.b8D1hvG8g2VjpcG0a"  # CHANGE_BEFORE_USE
+    password: "$2b$12$rb3zu9X7Nb8NQiTXpxF1pOgLuZ/q6w.eMUI.b8D1hvG8g2VjpcG0a" # CHANGE_BEFORE_USE
     email: "admin@example.com"
     groups: []

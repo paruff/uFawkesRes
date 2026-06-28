@@ -13,12 +13,12 @@ uFawkesRes is the Resource Plane of the [Fawkes IDP](https://github.com/paruff/f
 
 **Services:**
 
-| Service | Image | Container Name | Role |
-|---|---|---|---|
-| ingress-gateway | traefik:v3.0 | fawkes-ingress | Reverse proxy, entry point for all HTTP traffic |
-| sso-auth | authelia/authelia:latest | fawkes-sso | Single sign-on, 2FA, session management |
-| shared-postgres | postgres:16-alpine | fawkes-postgres | Shared relational database for SSO and downstream planes |
-| cache-backend | valkey/valkey:7.2-alpine | fawkes-cache | In-memory cache, session store, rate-limit backing |
+| Service         | Image                    | Container Name  | Role                                                     |
+| --------------- | ------------------------ | --------------- | -------------------------------------------------------- |
+| ingress-gateway | traefik:v3.0             | fawkes-ingress  | Reverse proxy, entry point for all HTTP traffic          |
+| sso-auth        | authelia/authelia:latest | fawkes-sso      | Single sign-on, 2FA, session management                  |
+| shared-postgres | postgres:16-alpine       | fawkes-postgres | Shared relational database for SSO and downstream planes |
+| cache-backend   | valkey/valkey:7.2-alpine | fawkes-cache    | In-memory cache, session store, rate-limit backing       |
 
 **Network:** `fawkes-backbone-net` (bridge) — all services attach to this network. Downstream planes connect by declaring it as `external: true`.
 
@@ -61,15 +61,15 @@ uFawkesRes is the Resource Plane of the [Fawkes IDP](https://github.com/paruff/f
 
 ## 3. Agent Roles
 
-| Agent | Responsibilities |
-|---|---|
+| Agent                     | Responsibilities                                                                |
+| ------------------------- | ------------------------------------------------------------------------------- |
 | **Workflow orchestrator** | Classifies issues into workflows (A/B/C/D), selects lifecycle, validates inputs |
-| **Spec agent** | Extracts requirements and acceptance criteria from user intent |
-| **Design agent** | Converts specification into technical design, components, interfaces |
-| **Plan agent** | Decomposes work into sequenced, bounded tasks with dependencies |
-| **Build agent** | Turns plan into code, manifests, pipeline configurations |
-| **Review agent** | Validates output against spec, design, quality, and governance |
-| **Test agent** | Writes and executes tests; validates acceptance criteria |
+| **Spec agent**            | Extracts requirements and acceptance criteria from user intent                  |
+| **Design agent**          | Converts specification into technical design, components, interfaces            |
+| **Plan agent**            | Decomposes work into sequenced, bounded tasks with dependencies                 |
+| **Build agent**           | Turns plan into code, manifests, pipeline configurations                        |
+| **Review agent**          | Validates output against spec, design, quality, and governance                  |
+| **Test agent**            | Writes and executes tests; validates acceptance criteria                        |
 
 ---
 
@@ -158,27 +158,27 @@ Every PR must include the AI-Assisted Review Block:
 
 ## 8. Issue Tracker
 
-| Issue | Description | Status | Files |
-|---|---|---|---|
-| R1 | Create `compose.yaml` skeleton with four service stubs | ✅ COMPLETE | `compose.yaml` |
-| R2 | Create `.env.example`, `README.md`, and `catalog-info.yaml` | ✅ COMPLETE | `.env.example`, `README.md`, `catalog-info.yaml` |
-| R3 | Create `Makefile` with init, check-env, up, down, status, test, pr targets | ✅ COMPLETE | `Makefile` |
-| R4 | Create `scripts/` — check-env.sh, wait-healthy.sh, smoke-test.sh, pr-create.sh | ✅ COMPLETE | `scripts/check-env.sh`, `scripts/wait-healthy.sh`, `scripts/smoke-test.sh`, `scripts/pr-create.sh` |
-| R5 | Create `init-scripts/01-create-databases.sql` and PostgreSQL init bootstrap | ✅ COMPLETE | `init-scripts/01-create-databases.sql` |
-| R6 | Create Authelia and Traefik config files | ✅ COMPLETE | `config/traefik/traefik.yml`, `config/authelia/configuration.yml`, `config/authelia/users_database.yml` |
-| R7 | Create `.github/workflows/ci.yml` adapted from uFawkesObs | ✅ COMPLETE | `.github/workflows/ci.yml` |
-| R8 | Create `AGENTS.md` with all issues registered | ✅ COMPLETE | `AGENTS.md` |
+| Issue | Description                                                                    | Status      | Files                                                                                                   |
+| ----- | ------------------------------------------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------- |
+| R1    | Create `compose.yaml` skeleton with four service stubs                         | ✅ COMPLETE | `compose.yaml`                                                                                          |
+| R2    | Create `.env.example`, `README.md`, and `catalog-info.yaml`                    | ✅ COMPLETE | `.env.example`, `README.md`, `catalog-info.yaml`                                                        |
+| R3    | Create `Makefile` with init, check-env, up, down, status, test, pr targets     | ✅ COMPLETE | `Makefile`                                                                                              |
+| R4    | Create `scripts/` — check-env.sh, wait-healthy.sh, smoke-test.sh, pr-create.sh | ✅ COMPLETE | `scripts/check-env.sh`, `scripts/wait-healthy.sh`, `scripts/smoke-test.sh`, `scripts/pr-create.sh`      |
+| R5    | Create `init-scripts/01-create-databases.sql` and PostgreSQL init bootstrap    | ✅ COMPLETE | `init-scripts/01-create-databases.sql`                                                                  |
+| R6    | Create Authelia and Traefik config files                                       | ✅ COMPLETE | `config/traefik/traefik.yml`, `config/authelia/configuration.yml`, `config/authelia/users_database.yml` |
+| R7    | Create `.github/workflows/ci.yml` adapted from uFawkesObs                      | ✅ COMPLETE | `.github/workflows/ci.yml`                                                                              |
+| R8    | Create `AGENTS.md` with all issues registered                                  | ✅ COMPLETE | `AGENTS.md`                                                                                             |
 
 ---
 
 ## 9. Service Endpoints & Ports
 
-| Service | Internal Port | External Port | Health Endpoint |
-|---|---|---|---|
-| Traefik | 80 | 80 | `/ping` |
-| Authelia | 9091 | 9091 | `/api/health` |
-| PostgreSQL | 5432 | — | — |
-| Valkey | 6379 | — | — |
+| Service    | Internal Port | External Port | Health Endpoint |
+| ---------- | ------------- | ------------- | --------------- |
+| Traefik    | 80            | 80            | `/ping`         |
+| Authelia   | 9091          | 9091          | `/api/health`   |
+| PostgreSQL | 5432          | —             | —               |
+| Valkey     | 6379          | —             | —               |
 
 ---
 

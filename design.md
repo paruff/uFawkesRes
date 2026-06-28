@@ -1,5 +1,6 @@
 # uFawkesRes — Design v0.2
-*Resource Plane of the Fawkes IDP Family*
+
+_Resource Plane of the Fawkes IDP Family_
 
 **Status:** Draft — 2026-06-23
 **Depends on:** res-specification.md v0.2
@@ -131,7 +132,6 @@ Do not run Valkey without authentication even in local dev.
 # After first boot: make db-create
 
 services:
-
   traefik:
     image: traefik:v3.7.5
     container_name: traefik
@@ -140,7 +140,7 @@ services:
       - "--configFile=/etc/traefik/traefik.yml"
     ports:
       - "80:80"
-      - "8080:8080"      # Traefik dashboard (dev only)
+      - "8080:8080" # Traefik dashboard (dev only)
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
@@ -154,7 +154,7 @@ services:
       retries: 3
 
   fawkes-sso:
-    image: authelia/authelia:4.38.17    # VERIFY tag at github.com/authelia/authelia/releases
+    image: authelia/authelia:4.38.17 # VERIFY tag at github.com/authelia/authelia/releases
     container_name: fawkes-sso
     restart: unless-stopped
     depends_on:
@@ -189,7 +189,8 @@ services:
       traefik.http.middlewares.authelia.forwardauth.trustForwardHeader: "true"
       traefik.http.middlewares.authelia.forwardauth.authResponseHeaders: "Remote-User,Remote-Groups,Remote-Name,Remote-Email"
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9091/api/health"]
+      test:
+        ["CMD", "wget", "-q", "--spider", "http://localhost:9091/api/health"]
       interval: 15s
       timeout: 5s
       retries: 5
@@ -208,7 +209,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"    # dev only — remove in production
+      - "5432:5432" # dev only — remove in production
     networks:
       - fawkes-backbone-net
     healthcheck:
@@ -228,7 +229,7 @@ services:
     volumes:
       - valkey-data:/data
     ports:
-      - "6379:6379"    # dev only — remove in production
+      - "6379:6379" # dev only — remove in production
     networks:
       - fawkes-backbone-net
     healthcheck:
@@ -280,17 +281,17 @@ Acceptable for local dev.
 # Traefik v3 static configuration
 api:
   dashboard: true
-  insecure: true    # Dashboard on :8080 without auth — dev only
+  insecure: true # Dashboard on :8080 without auth — dev only
 
-ping: {}            # Enables /ping healthcheck endpoint
+ping: {} # Enables /ping healthcheck endpoint
 
 providers:
   docker:
-    exposedByDefault: false   # Only route containers with traefik.enable=true
+    exposedByDefault: false # Only route containers with traefik.enable=true
     network: fawkes-backbone-net
   file:
     directory: /etc/traefik/dynamic
-    watch: true               # Hot-reload dynamic config changes
+    watch: true # Hot-reload dynamic config changes
 
 entryPoints:
   web:
@@ -299,7 +300,7 @@ entryPoints:
     forwardedHeaders:
       trustedIPs:
         - "127.0.0.1/32"
-        - "172.16.0.0/12"    # Docker network range
+        - "172.16.0.0/12" # Docker network range
 
 log:
   level: INFO
@@ -379,7 +380,7 @@ session:
   redis:
     host: fawkes-cache
     port: 6379
-    password: ${VALKEY_PASSWORD}    # VERIFY: Authelia supports env var here
+    password: ${VALKEY_PASSWORD} # VERIFY: Authelia supports env var here
     database_index: 0
 
 storage:
@@ -514,44 +515,44 @@ echo "Databases created. Add the passwords above to the relevant plane .env file
 .PHONY: init up down db-create logs-traefik logs-authelia test help
 
 init: ## Generate secrets, create config dirs (idempotent — safe to run again)
-	@bash scripts/init.sh
+ @bash scripts/init.sh
 
 up: ## Start uFawkesRes stack (run make init first)
-	docker compose up -d
-	@echo ""
-	@echo "  Traefik gateway:   http://localhost:80"
-	@echo "  Traefik dashboard: http://localhost:8080"
-	@echo "  Authelia SSO:      http://localhost:9091"
-	@echo ""
-	@echo "Run 'make db-create' after first boot to provision per-plane databases."
+ docker compose up -d
+ @echo ""
+ @echo "  Traefik gateway:   http://localhost:80"
+ @echo "  Traefik dashboard: http://localhost:8080"
+ @echo "  Authelia SSO:      http://localhost:9091"
+ @echo ""
+ @echo "Run 'make db-create' after first boot to provision per-plane databases."
 
 down: ## Stop stack (keep volumes — data is preserved)
-	docker compose down
+ docker compose down
 
 down-volumes: ## Stop stack AND delete all data volumes
-	docker compose down -v
+ docker compose down -v
 
 db-create: ## Create per-plane databases in Postgres (run once after first up)
-	@bash scripts/db-create.sh
+ @bash scripts/db-create.sh
 
 logs-traefik: ## Tail Traefik logs
-	docker compose logs -f traefik
+ docker compose logs -f traefik
 
 logs-authelia: ## Tail Authelia logs
-	docker compose logs -f fawkes-sso
+ docker compose logs -f fawkes-sso
 
 test: ## Run structural contract tests
-	pytest tests/unit/ -v
+ pytest tests/unit/ -v
 
 pre-commit-setup: ## Install pre-commit hooks
-	pip install pre-commit && pre-commit install
+ pip install pre-commit && pre-commit install
 
 pre-commit-run: ## Run pre-commit on all files
-	pre-commit run --all-files
+ pre-commit run --all-files
 
 help:
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
-	  awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
+ @grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+   awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
 ```
 
 ---
@@ -559,6 +560,7 @@ help:
 ## 11. Test Design
 
 ### `tests/unit/test_compose_yaml.py`
+
 - Services present: `traefik`, `fawkes-sso`, `fawkes-postgres`, `fawkes-cache`
 - All 4 services have `healthcheck` blocks
 - `fawkes-sso` has `depends_on` with `condition: service_healthy` for both postgres and cache
@@ -569,6 +571,7 @@ help:
 - Secret files path pattern `./authelia/secrets/` for all 5 secrets
 
 ### `tests/unit/test_traefik_config.py`
+
 - `traefik/traefik.yml` exists and is valid YAML
 - `api.insecure` is `true`
 - `providers.docker.exposedByDefault` is `false`
@@ -577,6 +580,7 @@ help:
 - `ping` key is present
 
 ### `tests/unit/test_authelia_config.py`
+
 - `authelia/configuration.yml` exists and is valid YAML
 - `storage.postgres.host` is `fawkes-postgres`
 - `session.redis.host` is `fawkes-cache`
@@ -588,11 +592,11 @@ help:
 
 ## 12. Risks and Mitigations
 
-| Risk | Likelihood | Mitigation |
-|---|---|---|
-| Authelia fails to start because `authelia` DB does not exist | **High** (bootstrap ordering problem) | `make init` creates the `authelia` DB using `psql` directly before starting the stack; document in quickstart |
-| `${VALKEY_PASSWORD}` in Valkey healthcheck exposed in process list | Medium | Acceptable for v0.2 dev; note in code comment; fix in v0.3 using secrets file |
-| Authelia ForwardAuth middleware path incorrect for chosen version | Medium | Pin Authelia version; add `test_authelia_config.py` assertion; verify path at docs before RES-002 |
-| Traefik Docker socket mount creates security surface | Always present | Mount as `:ro`; this is the standard pattern; document explicitly |
+| Risk                                                                                                       | Likelihood                                           | Mitigation                                                                                                        |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Authelia fails to start because `authelia` DB does not exist                                               | **High** (bootstrap ordering problem)                | `make init` creates the `authelia` DB using `psql` directly before starting the stack; document in quickstart     |
+| `${VALKEY_PASSWORD}` in Valkey healthcheck exposed in process list                                         | Medium                                               | Acceptable for v0.2 dev; note in code comment; fix in v0.3 using secrets file                                     |
+| Authelia ForwardAuth middleware path incorrect for chosen version                                          | Medium                                               | Pin Authelia version; add `test_authelia_config.py` assertion; verify path at docs before RES-002                 |
+| Traefik Docker socket mount creates security surface                                                       | Always present                                       | Mount as `:ro`; this is the standard pattern; document explicitly                                                 |
 | Downstream plane uses wrong network name (`fawkes-net` instead of `ufawkes-resources_fawkes-backbone-net`) | **High** (all prior docs in session used wrong name) | RES-004 produces a `docs/connecting-downstream.md` with the exact YAML block to copy; amend fawkes-integration.md |
-| `make down-volumes` accidentally destroys Postgres data | Medium | Separate `down` (safe) and `down-volumes` (destructive) targets with distinct names; no `-v` flag on `down` |
+| `make down-volumes` accidentally destroys Postgres data                                                    | Medium                                               | Separate `down` (safe) and `down-volumes` (destructive) targets with distinct names; no `-v` flag on `down`       |
