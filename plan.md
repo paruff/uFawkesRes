@@ -1,5 +1,6 @@
 # uFawkesRes — Implementation Plan v0.2
-*Lean issues for Deepseek v4 flash implementation*
+
+_Lean issues for Deepseek v4 flash implementation_
 
 **Status:** Draft — 2026-06-23
 **Branch strategy:** One branch per issue: `feat/RES-001-pre-commit`, etc. PRs to `main`.
@@ -14,16 +15,16 @@ Before any RES issue is started, the following cross-repo corrections must be ma
 These are not Deepseek implementation tasks — they are human corrections to documents
 produced earlier in this session that used the wrong network name.
 
-| Document | What to change |
-|---|---|
+| Document                         | What to change                                                                                                                                |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | `specification.md` (uFawkesPipe) | `fawkes-net` → `ufawkes-resources_fawkes-backbone-net`; `postgres:5432` → `fawkes-postgres:5432`; `sonarqube:9000` external reference updated |
-| `design.md` (uFawkesPipe) | All compose network blocks corrected |
-| `sec-specification.md` | `fawkes-net` → `ufawkes-resources_fawkes-backbone-net`; `postgres:5432` → `fawkes-postgres:5432`; `valkey:6379` → `fawkes-cache:6379` |
-| `sec-design.md` | Same corrections; DefectDojo connection strings updated |
-| `devx-specification.md` | All connection strings updated |
-| `devx-design.md` | `compose.yaml` network block corrected |
-| `devx-plan.md` | DX-002 acceptance criteria corrected |
-| `fawkes-integration.md` | Network name, all DNS names, port table corrected |
+| `design.md` (uFawkesPipe)        | All compose network blocks corrected                                                                                                          |
+| `sec-specification.md`           | `fawkes-net` → `ufawkes-resources_fawkes-backbone-net`; `postgres:5432` → `fawkes-postgres:5432`; `valkey:6379` → `fawkes-cache:6379`         |
+| `sec-design.md`                  | Same corrections; DefectDojo connection strings updated                                                                                       |
+| `devx-specification.md`          | All connection strings updated                                                                                                                |
+| `devx-design.md`                 | `compose.yaml` network block corrected                                                                                                        |
+| `devx-plan.md`                   | DX-002 acceptance criteria corrected                                                                                                          |
+| `fawkes-integration.md`          | Network name, all DNS names, port table corrected                                                                                             |
 
 The integration document also needs one new section: **Traefik routing** — how
 downstream service labels connect to the Traefik gateway and Authelia middleware.
@@ -48,15 +49,17 @@ downstream service labels connect to the Traefik gateway and Authelia middleware
 **Branch:** `feat/RES-001-tooling`
 
 ### Context
+
 The README mentions no pre-commit or test infrastructure. This issue adds the
 foundational tooling that every subsequent PR's test gate depends on.
 
 ### Acceptance criteria
+
 - [ ] `.pre-commit-config.yaml` created with: `gitleaks` v8.18.2, `detect-secrets`,
-  `yamllint`, `markdownlint-cli`, `prettier`
+      `yamllint`, `markdownlint-cli`, `prettier`
 - [ ] `.gitleaks.toml` created (minimal standard config)
 - [ ] `.secrets.baseline` generated: `detect-secrets scan > .secrets.baseline`
-  (must exclude the placeholder hash in `authelia/users_database.yml`)
+      (must exclude the placeholder hash in `authelia/users_database.yml`)
 - [ ] `.yamllint` created (max line length 120)
 - [ ] `.markdownlint.json` created
 - [ ] `tests/unit/__init__.py` created (empty)
@@ -65,6 +68,7 @@ foundational tooling that every subsequent PR's test gate depends on.
 - [ ] `pre-commit run --all-files` passes on files created in this issue
 
 ### Implementation notes for Deepseek
+
 The `authelia/users_database.yml` placeholder argon2id hash will trigger `detect-secrets`
 as a false positive. Add a `# pragma: allowlist secret` comment on the password line,
 or add a `.secrets.baseline` exclusion. Do not remove the placeholder — operators
@@ -80,6 +84,7 @@ need to see where to put the real hash.
 **Branch:** `feat/RES-002-compose`
 
 ### Context
+
 The existing `compose.yaml` (if it exists — resolve P2 first) uses Traefik and
 Authelia. This issue pins all image versions, adds Docker secrets for Authelia,
 adds `depends_on` with health conditions, writes the Traefik static config and
@@ -89,10 +94,11 @@ if they do not already exist. Closes the most critical structural gaps in the re
 ### Acceptance criteria
 
 **`compose.yaml`:**
+
 - [ ] All 4 services present: `traefik`, `fawkes-sso`, `fawkes-postgres`, `fawkes-cache`
 - [ ] All images pinned to specific versions (no `:latest`)
 - [ ] `traefik` image: `traefik:v3.7.5`; `fawkes-postgres` image: `postgres:17-alpine`;
-  `fawkes-cache` image: `valkey/valkey:8.1-alpine`; `fawkes-sso` image: verified Authelia tag
+      `fawkes-cache` image: `valkey/valkey:8.1-alpine`; `fawkes-sso` image: verified Authelia tag
 - [ ] `fawkes-sso` has `depends_on` with `condition: service_healthy` for both postgres and cache
 - [ ] All 4 services have `healthcheck` blocks matching spec §9 acceptance criteria
 - [ ] `fawkes-sso` uses 4 Docker secrets via `file:` references to `./authelia/secrets/`
@@ -104,14 +110,17 @@ if they do not already exist. Closes the most critical structural gaps in the re
 - [ ] `secrets` top-level block lists all 5 secrets with `file:` paths
 
 **`traefik/traefik.yml`:**
+
 - [ ] Created per design.md §4: `api.insecure: true`, `providers.docker.exposedByDefault: false`,
-  `providers.docker.network: fawkes-backbone-net`, `entryPoints.web.address: ":80"`, `ping: {}`
+      `providers.docker.network: fawkes-backbone-net`, `entryPoints.web.address: ":80"`, `ping: {}`
 - [ ] `providers.file.directory: /etc/traefik/dynamic` with `watch: true`
 
 **`traefik/dynamic/middlewares.yml`:**
+
 - [ ] Created per design.md §5 (documentation/reference file only)
 
 **`authelia/configuration.yml`:**
+
 - [ ] Created per design.md §6 **if it does not already exist** (P2 resolution)
 - [ ] All connection strings use `fawkes-postgres` and `fawkes-cache` as hostnames
 - [ ] `session.redis.database_index: 0`
@@ -119,14 +128,17 @@ if they do not already exist. Closes the most critical structural gaps in the re
 - [ ] `notifier.filesystem` (no SMTP for local dev)
 
 **`authelia/users_database.yml`:**
+
 - [ ] Created with one `admin` user entry and placeholder argon2id hash
 - [ ] Comment above hash explains how to generate a real hash
 
 **`.env.example`:**
+
 - [ ] Updated with `VALKEY_PASSWORD`, `POSTGRES_SUPERUSER`, `CODER_DB_PASSWORD`,
-  `BACKSTAGE_DB_PASSWORD`, `DOJO_DB_PASSWORD`, `INFISICAL_DB_PASSWORD`
+      `BACKSTAGE_DB_PASSWORD`, `DOJO_DB_PASSWORD`, `INFISICAL_DB_PASSWORD`
 
 **Tests:**
+
 - [ ] `tests/unit/test_compose_yaml.py` created per design.md §11
 - [ ] `tests/unit/test_traefik_config.py` created per design.md §11
 - [ ] `tests/unit/test_authelia_config.py` created per design.md §11
@@ -134,6 +146,7 @@ if they do not already exist. Closes the most critical structural gaps in the re
 - [ ] `yamllint compose.yaml traefik/traefik.yml authelia/configuration.yml` passes
 
 ### Implementation notes for Deepseek
+
 **Do not invent Authelia configuration field names.** The Authelia v4.38
 configuration reference is at https://www.authelia.com/configuration/. Field names
 and structure changed significantly between v4.36 and v4.38. Read the docs for the
@@ -157,6 +170,7 @@ service will be able to authenticate.
 **Branch:** `feat/RES-003-scripts`
 
 ### Context
+
 `make init` is mentioned in the README Quick Start but the implementation is absent or
 incomplete. `make db-create` is new. These scripts are the operator's entry point.
 Without them, a fresh clone cannot be started.
@@ -164,25 +178,28 @@ Without them, a fresh clone cannot be started.
 ### Acceptance criteria
 
 **`scripts/init.sh`:**
+
 - [ ] Creates `authelia/secrets/` directory if absent
 - [ ] Generates 5 secret files idempotently (does not overwrite existing):
-  `JWT_SECRET`, `SESSION_SECRET`, `STORAGE_PASSWORD`, `STORAGE_ENCRYPTION_KEY`,
-  `POSTGRES_SUPERUSER_PASSWORD`
+      `JWT_SECRET`, `SESSION_SECRET`, `STORAGE_PASSWORD`, `STORAGE_ENCRYPTION_KEY`,
+      `POSTGRES_SUPERUSER_PASSWORD`
 - [ ] Uses `openssl rand -base64 64` (or `32` for shorter secrets)
 - [ ] Prints next-step instructions: how to generate argon2id hash, how to update
-  `users_database.yml`, how to set `VALKEY_PASSWORD` in `.env`
+      `users_database.yml`, how to set `VALKEY_PASSWORD` in `.env`
 - [ ] Script is idempotent: running twice produces the same secrets, does not fail
 
 **`scripts/db-create.sh`:**
+
 - [ ] Reads superuser password from `authelia/secrets/POSTGRES_SUPERUSER_PASSWORD`
 - [ ] Creates 4 databases with owners: `coder/coder`, `backstage/backstage`,
-  `dojo/dojo`, `infisical/infisical`
+      `dojo/dojo`, `infisical/infisical`
 - [ ] Reads per-plane passwords from `.env` variables (`CODER_DB_PASSWORD` etc.)
 - [ ] Idempotent: `CREATE DATABASE IF NOT EXISTS` pattern (use `2>/dev/null || echo already exists`)
 - [ ] Does NOT create the `authelia` database — that is handled separately by `make init`
-  (see implementation note below)
+      (see implementation note below)
 
 **`Makefile`:**
+
 - [ ] `init` target calls `scripts/init.sh`
 - [ ] `up` target calls `docker compose up -d`; prints service URLs
 - [ ] `down` target calls `docker compose down` (no `-v`)
@@ -193,9 +210,11 @@ Without them, a fresh clone cannot be started.
 - [ ] `help` target with `##` comment parsing
 
 ### Implementation notes for Deepseek
+
 **Authelia database bootstrap problem:** Authelia requires its `authelia` database
 to exist before it starts. But `db-create.sh` runs after the stack is up. Solve this
 in `init.sh`: after generating secrets, run:
+
 ```bash
 # Start only postgres first
 docker compose up -d fawkes-postgres
@@ -209,6 +228,7 @@ docker exec fawkes-postgres psql -U postgres \
 # Bring down postgres — operator runs make up separately
 docker compose stop fawkes-postgres
 ```
+
 This pattern starts only Postgres, provisions Authelia's schema, then stops it.
 The operator then runs `make up` to start the full stack. Document this clearly.
 
@@ -225,6 +245,7 @@ The output includes `\n` at the end — pipe through `tr -d '\n'` to remove it.
 **Branch:** `feat/RES-004-docs`
 
 ### Context
+
 The README Quick Start is correct but thin. Downstream planes need a precise
 copy-paste connection reference. This is also where the network name correction
 is formally documented for all other plane authors. Closes the cross-repo correction.
@@ -232,6 +253,7 @@ is formally documented for all other plane authors. Closes the cross-repo correc
 ### Acceptance criteria
 
 **`docs/quickstart.md`:**
+
 - [ ] Step 0: Prerequisites (Docker 24+, `openssl` available, ports 80 and 9091 free)
 - [ ] Step 1: `make init` — what it does, what files it creates
 - [ ] Step 2: Generate argon2id password hash (exact docker command)
@@ -241,9 +263,10 @@ is formally documented for all other plane authors. Closes the cross-repo correc
 - [ ] Step 6: `make db-create`
 - [ ] Step 7: Verify acceptance criteria (`curl` commands from spec §9)
 - [ ] Troubleshooting: Authelia fails to start → check authelia DB exists;
-  Traefik 404 → check `traefik.enable: true` label on downstream service
+      Traefik 404 → check `traefik.enable: true` label on downstream service
 
 **`docs/connecting-downstream.md`:**
+
 - [ ] Exact YAML block for downstream `compose.yaml` network attachment (from README)
 - [ ] Table of service DNS names and ports (from spec §2.3)
 - [ ] Valkey index partition table (from spec §6)
@@ -252,10 +275,12 @@ is formally documented for all other plane authors. Closes the cross-repo correc
 - [ ] Statement: "The network is named `ufawkes-resources_fawkes-backbone-net`. Do not use `fawkes-net`."
 
 **`docs/db-tenancy.md`:**
+
 - [ ] Table of all databases, owners, created-by steps
 - [ ] Statement: cross-plane SQL queries are prohibited; use service APIs
 
 **`README.md` updates:**
+
 - [ ] Version table: pin Traefik to `v3.7.5`, Authelia to verified tag, Postgres to `17-alpine`, Valkey to `8.1-alpine`
 - [ ] Add link to `docs/connecting-downstream.md`
 - [ ] Add `make db-create` to Quick Start steps
@@ -264,17 +289,19 @@ is formally documented for all other plane authors. Closes the cross-repo correc
 
 ## Milestone summary
 
-| Milestone | Issues | Target |
-|---|---|---|
-| **v0.2-tooling** | RES-001 | Week 3 |
-| **v0.2-infra** | RES-002 | Week 3–4 |
-| **v0.2-ops** | RES-003 | Week 4 |
-| **v0.2-docs** | RES-004 | Week 4 |
+| Milestone        | Issues  | Target   |
+| ---------------- | ------- | -------- |
+| **v0.2-tooling** | RES-001 | Week 3   |
+| **v0.2-infra**   | RES-002 | Week 3–4 |
+| **v0.2-ops**     | RES-003 | Week 4   |
+| **v0.2-docs**    | RES-004 | Week 4   |
 
 **Dependency graph:**
+
 ```
 RES-001 → RES-002 → RES-003 → RES-004
 ```
+
 All issues are strictly sequential. No parallel work.
 
 ---

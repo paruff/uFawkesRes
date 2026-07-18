@@ -32,10 +32,10 @@ make init && make up
 
 ## Ports
 
-| Service   | Port  | Purpose            | Access URL                  |
-| --------- | ----- | ------------------ | --------------------------- |
-| **Traefik**  | 80    | Ingress gateway    | http://localhost:80         |
-| **Authelia** | 9091  | SSO authentication | http://localhost:9091       |
+| Service      | Port | Purpose            | Access URL            |
+| ------------ | ---- | ------------------ | --------------------- |
+| **Traefik**  | 80   | Ingress gateway    | http://localhost:80   |
+| **Authelia** | 9091 | SSO authentication | http://localhost:9091 |
 
 ## Health Checks
 
