@@ -156,7 +156,47 @@ Every PR must include the AI-Assisted Review Block:
 
 ---
 
-## 8. Issue Tracker
+## 8. GitOps Principles & Trunk-Based Delivery
+
+### Branch Discipline
+
+- All work happens on feature branches off `main` (trunk-based development, short-lived)
+- Branch naming: `<type>/<slug>` (see `docs/PR_STANDARD.md`)
+- Never commit directly to `main`
+- Every branch opens a PR through CI gates before merge
+
+### Deployment Lifecycle Gates
+
+1. **Main CI must be green before any PR merges.** Enforced by `main-ci-guard.yml` calling `paruff/ufawkespipe/.github/workflows/reusable-main-ci-guard.yml@v1.2.0`, which verifies the `ci.yml` workflow (with `workflow-id: ci.yml` and `workflow-name: "CI"`) passed on the PR branch before allowing merge to `main`.
+2. **Observability is built-in.** All CI jobs emit `job-start` / `job-finish` timestamps as the first and last steps, enabling traceability of build times, test results, and deploy status.
+
+### PR Gates Are Deploy Gates
+
+- Every merge to `main` is a deploy candidate
+- Broken `main` blocks all PRs — fix main CI before merging anything else
+
+### Rollback
+
+- Rollback is `git revert` to a previous commit
+- The primary rollback mechanism is reverting the merge commit
+
+---
+
+## 9. Context Files
+
+| Pri | File | Why |
+|-----|------|-----|
+| 1 | `compose.yaml` | service definitions and versions |
+| 2 | `AGENTS.md` | agent instructions (this file) |
+| 3 | `.github/workflows/ci.yml` | CI pipeline definition |
+| 4 | `.github/workflows/main-ci-guard.yml` | main branch CI guard |
+| 5 | `.env.example` | required environment variables |
+| 6 | `Makefile` | common commands and workflows |
+| 7 | `docs/PR_STANDARD.md` | PR naming and CI requirements |
+
+---
+
+## 10. Issue Tracker
 
 | Issue | Description                                                                    | Status      | Files                                                                                                   |
 | ----- | ------------------------------------------------------------------------------ | ----------- | ------------------------------------------------------------------------------------------------------- |
@@ -168,10 +208,11 @@ Every PR must include the AI-Assisted Review Block:
 | R6    | Create Authelia and Traefik config files                                       | ✅ COMPLETE | `config/traefik/traefik.yml`, `config/authelia/configuration.yml`, `config/authelia/users_database.yml` |
 | R7    | Create `.github/workflows/ci.yml` adapted from uFawkesObs                      | ✅ COMPLETE | `.github/workflows/ci.yml`                                                                              |
 | R8    | Create `AGENTS.md` with all issues registered                                  | ✅ COMPLETE | `AGENTS.md`                                                                                             |
+| R9    | Add GitOps lifecycle gates: main-ci-guard.yml, PR_STANDARD.md, timestamps     | ✅ COMPLETE | `.github/workflows/main-ci-guard.yml`, `docs/PR_STANDARD.md`, `.github/workflows/ci.yml`, `AGENTS.md`   |
 
 ---
 
-## 9. Service Endpoints & Ports
+## 11. Service Endpoints & Ports
 
 | Service    | Internal Port | External Port | Health Endpoint |
 | ---------- | ------------- | ------------- | --------------- |
@@ -182,7 +223,7 @@ Every PR must include the AI-Assisted Review Block:
 
 ---
 
-## 10. Reproducible First Boot Sequence
+## 12. Reproducible First Boot Sequence
 
 ```bash
 cp .env.example .env
@@ -196,7 +237,7 @@ On a clean system, this is the only sequence required.
 
 ---
 
-## 11. Integration with Other Planes
+## 13. Integration with Other Planes
 
 uFawkesRes is designed to be consumed by:
 
@@ -209,11 +250,10 @@ When making changes, check whether cross-plane consumers will be affected.
 
 ---
 
-## 12. Handoff Block
+## 14. Handoff Block
 
 **Current branch:** `master`
-**Last completed issue:** R7 — `.github/workflows/ci.yml`
-**Last completed R8 — AGENTS.md:** Pending commit
+**Last completed issue:** R9 — GitOps lifecycle gates
 **Outstanding items:** None
 
 ### Handoff instructions for the next agent session
