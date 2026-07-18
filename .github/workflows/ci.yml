@@ -15,8 +15,16 @@ permissions:
   pull-requests: write
 
 jobs:
+  ci-start:
+    name: CI Start
+    runs-on: ubuntu-latest
+    steps:
+      - name: job-start
+        run: echo "job-start ts=$(date --rfc-3339=seconds)"
+
   preflight:
     name: Pre-flight
+    needs: [ci-start]
     uses: paruff/ufawkespipe/.github/workflows/reusable-preflight.yml@v1.1.0
 
   lint:
@@ -63,10 +71,13 @@ jobs:
 
   pipeline-complete:
     name: Pipeline Complete
-    needs: [preflight, lint, build, security, dependency-review, tests]
+    needs: [ci-start, preflight, lint, build, security, dependency-review, tests]
     if: always()
     runs-on: ubuntu-latest
     steps:
+      - name: job-start
+        run: echo "job-start ts=$(date --rfc-3339=seconds)"
+
       - name: Check results
         run: |
           echo "=== Pipeline Results ==="
@@ -84,3 +95,7 @@ jobs:
             exit 1
           fi
           echo "✅ Pipeline PASSED"
+
+      - name: job-finish
+        if: always()
+        run: echo "job-finish ts=$(date --rfc-3339=seconds)"
