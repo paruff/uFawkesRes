@@ -140,6 +140,10 @@ uFawkesRes is the Resource Plane of the [Fawkes IDP](https://github.com/paruff/f
 
 ### Commits
 
+- Conventional Commits format: `type(scope): description` (1-72 chars on
+  the subject line). Types: `feat`, `fix`, `docs`, `style`, `refactor`,
+  `test`, `chore`, `ci`, `perf`, `build`, `revert`. Enforced in CI via
+  `paruff/ufawkespipe`'s `reusable-preflight.yml` (see `.github/workflows/ci.yml`).
 - Scope prefix matching issue: `fix(infra):`, `docs(infra):`, `docs(agents):`
 - Reference issue number when applicable
 
@@ -184,15 +188,15 @@ Every PR must include the AI-Assisted Review Block:
 
 ## 9. Context Files
 
-| Pri | File | Why |
-|-----|------|-----|
-| 1 | `compose.yaml` | service definitions and versions |
-| 2 | `AGENTS.md` | agent instructions (this file) |
-| 3 | `.github/workflows/ci.yml` | CI pipeline definition |
-| 4 | `.github/workflows/main-ci-guard.yml` | main branch CI guard |
-| 5 | `.env.example` | required environment variables |
-| 6 | `Makefile` | common commands and workflows |
-| 7 | `docs/PR_STANDARD.md` | PR naming and CI requirements |
+| Pri | File                                  | Why                              |
+| --- | ------------------------------------- | -------------------------------- |
+| 1   | `compose.yaml`                        | service definitions and versions |
+| 2   | `AGENTS.md`                           | agent instructions (this file)   |
+| 3   | `.github/workflows/ci.yml`            | CI pipeline definition           |
+| 4   | `.github/workflows/main-ci-guard.yml` | main branch CI guard             |
+| 5   | `.env.example`                        | required environment variables   |
+| 6   | `Makefile`                            | common commands and workflows    |
+| 7   | `docs/PR_STANDARD.md`                 | PR naming and CI requirements    |
 
 ---
 
@@ -208,7 +212,7 @@ Every PR must include the AI-Assisted Review Block:
 | R6    | Create Authelia and Traefik config files                                       | ✅ COMPLETE | `config/traefik/traefik.yml`, `config/authelia/configuration.yml`, `config/authelia/users_database.yml` |
 | R7    | Create `.github/workflows/ci.yml` adapted from uFawkesObs                      | ✅ COMPLETE | `.github/workflows/ci.yml`                                                                              |
 | R8    | Create `AGENTS.md` with all issues registered                                  | ✅ COMPLETE | `AGENTS.md`                                                                                             |
-| R9    | Add GitOps lifecycle gates: main-ci-guard.yml, PR_STANDARD.md, timestamps     | ✅ COMPLETE | `.github/workflows/main-ci-guard.yml`, `docs/PR_STANDARD.md`, `.github/workflows/ci.yml`, `AGENTS.md`   |
+| R9    | Add GitOps lifecycle gates: main-ci-guard.yml, PR_STANDARD.md, timestamps      | ✅ COMPLETE | `.github/workflows/main-ci-guard.yml`, `docs/PR_STANDARD.md`, `.github/workflows/ci.yml`, `AGENTS.md`   |
 
 ---
 
