@@ -10,26 +10,26 @@ type(scope): description
 
 ### Types
 
-| Type     | Usage                                        |
-| -------- | -------------------------------------------- |
-| `feat`   | New service, config, or capability           |
-| `fix`    | Bug fix                                      |
-| `docs`   | Documentation only                           |
-| `chore`  | Maintenance, tooling, CI, dependencies       |
-| `refactor` | Code change with no functional difference  |
-| `test`   | Adding or fixing tests                       |
+| Type       | Usage                                     |
+| ---------- | ----------------------------------------- |
+| `feat`     | New service, config, or capability        |
+| `fix`      | Bug fix                                   |
+| `docs`     | Documentation only                        |
+| `chore`    | Maintenance, tooling, CI, dependencies    |
+| `refactor` | Code change with no functional difference |
+| `test`     | Adding or fixing tests                    |
 
 ### Scope
 
 Use the most specific scope that describes the change:
 
-| Scope          | Area                                              |
-| -------------- | ------------------------------------------------- |
-| `infra`        | compose.yaml, Traefik, Authelia, PostgreSQL, etc. |
-| `ci`           | Workflows, GitHub Actions config                  |
-| `agents`       | AGENTS.md, agent instructions                     |
-| `docs`         | README, docs/ files                               |
-| `scripts`      | Shell scripts in scripts/                         |
+| Scope     | Area                                              |
+| --------- | ------------------------------------------------- |
+| `infra`   | compose.yaml, Traefik, Authelia, PostgreSQL, etc. |
+| `ci`      | Workflows, GitHub Actions config                  |
+| `agents`  | AGENTS.md, agent instructions                     |
+| `docs`    | README, docs/ files                               |
+| `scripts` | Shell scripts in scripts/                         |
 
 ### Description
 

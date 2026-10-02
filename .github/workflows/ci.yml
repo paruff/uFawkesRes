@@ -71,7 +71,8 @@ jobs:
 
   pipeline-complete:
     name: Pipeline Complete
-    needs: [ci-start, preflight, lint, build, security, dependency-review, tests]
+    needs:
+      [ci-start, preflight, lint, build, security, dependency-review, tests]
     if: always()
     runs-on: ubuntu-latest
     steps:
