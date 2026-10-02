@@ -14,8 +14,10 @@ Valkey cache, a Traefik ingress gateway and Authelia SSO on the
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Shared PostgreSQL     | [fawkes `platform/apps/postgresql`](https://github.com/paruff/fawkes/tree/main/platform/apps/postgresql): CloudNativePG on Kubernetes, with per-app credentials |
 | Traefik ingress       | [fawkes `platform/apps/ingress-nginx`](https://github.com/paruff/fawkes/tree/main/platform/apps/ingress-nginx): ingress-nginx on Kubernetes                     |
-| Valkey cache          | No replacement                                                                                                                                                  |
-| Authelia SSO          | No replacement                                                                                                                                                  |
+| Valkey cache          | No replacement yet; tracked as a follow-on for fawkes                                                                                                           |
+| Authelia SSO          | No replacement yet; tracked as a follow-on for fawkes                                                                                                           |
+
+The Valkey, SSO and cloud-readiness gaps are tracked in the [suite plan's fawkes phase](https://github.com/paruff/uFawkes.dev/blob/main/docs/ai-sdlc/suite-release/plan.md) as work after Alpha. They are tracked, not promised for a date.
 
 Two caveats. fawkes is pre-alpha (`v0.3.95`): local k3d evaluation works,
 cloud production does not. And it runs on Kubernetes, so it doesn't serve the
