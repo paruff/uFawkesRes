@@ -1,75 +1,21 @@
-# uFawkesRes
+# uFawkesRes (Deprecated)
 
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Part of Fawkes IDP](https://img.shields.io/badge/Part%20of-Fawkes%20IDP-purple.svg)](https://github.com/paruff/fawkes)
+**This repository is deprecated and is being archived. Don't build on it, and
+there is no successor yet.**
 
-## What This Is
+uFawkesRes was the suite's resource plane: a shared PostgreSQL database, a
+Valkey cache, a Traefik ingress gateway and Authelia SSO on the
+`fawkes-backbone-net` network. The suite no longer depends on it.
 
-uFawkesRes is the **Resource Plane** of the [Fawkes IDP](https://github.com/paruff/fawkes). It provides the shared infrastructure services that downstream planes (uFawkesObs, uFawkesPipe, etc.) depend on: an **ingress gateway** (Traefik), **SSO authentication** (Authelia), a **shared PostgreSQL** database, and a **Valkey cache** — all wired together on the `fawkes-backbone-net` bridge network.
+## What replaces it
 
-Think of it as the power strip and backhaul your observability, CI/CD, and developer planes plug into.
+Nothing has been chosen. The open question that matters most is the database
+for [uFawkesDevX](https://github.com/paruff/uFawkesDevX), which used to
+connect to this repo's Postgres. It's tracked in
+[uFawkesDevX#57](https://github.com/paruff/uFawkesDevX/issues/57) and gates
+that repo's `v0.1.0` (acceptance criterion AC-DEVX-01 in the suite plan).
+Until it's decided, uFawkesDevX needs you to supply an external Postgres.
 
-## Prerequisites
-
-- **Docker** 24+
-- **Docker Compose** v2+
-- Ports 80 (Traefik) and 9091 (Authelia) available
-
-## Quick Start
-
-```bash
-# 1. Clone and enter
-git clone https://github.com/paruff/uFawkesRes.git
-cd uFawkesRes
-
-# 2. Create and configure environment variables
-cp .env.example .env
-$EDITOR .env
-
-# 3. Create data directories and start the stack
-make init && make up
-```
-
-## Ports
-
-| Service      | Port | Purpose            | Access URL            |
-| ------------ | ---- | ------------------ | --------------------- |
-| **Traefik**  | 80   | Ingress gateway    | http://localhost:80   |
-| **Authelia** | 9091 | SSO authentication | http://localhost:9091 |
-
-## Health Checks
-
-```bash
-# Check Traefik
-curl -f http://localhost:80/ping
-
-# Check Authelia
-curl -f http://localhost:9091/api/health
-```
-
-## Connecting a Downstream Plane
-
-Other uFawkes stacks connect to the Resource Plane by attaching to the `fawkes-backbone-net` external network. Add this block to their `compose.yaml`:
-
-```yaml
-networks:
-  fawkes-backbone-net:
-    name: ufawkes-resources_fawkes-backbone-net
-    external: true
-```
-
-Services in the downstream plane can then reach `fawkes-postgres:5432`, `fawkes-cache:6379`, and `fawkes-sso:9091` by container name.
-
-## uFawkes Stack Ecosystem
-
-uFawkesRes is part of the [uFawkes](https://ufawkes.dev) platform engineering ecosystem:
-
-| Stack           | Description                                          | Link                                            |
-| --------------- | ---------------------------------------------------- | ----------------------------------------------- |
-| **uFawkesRes**  | Resources — ingress, SSO, Postgres, Valkey           | [GitHub](https://github.com/paruff/uFawkesRes)  |
-| **uFawkesObs**  | Observability — Prometheus, Grafana, AI dashboards   | [GitHub](https://github.com/paruff/uFawkesObs)  |
-| **uFawkesPipe** | CI/CD — Jenkins, Buildpacks, DevSecOps               | [GitHub](https://github.com/paruff/ufawkespipe) |
-| **uFawkesDORA** | DORA metrics — dashboards, VSM, delivery performance | [GitHub](https://github.com/paruff/ufawkesdora) |
-| **uFawkesSec**  | Security — policy-as-code, supply chain, guardrails  | [GitHub](https://github.com/paruff/ufawkessec)  |
-| **uFawkesDevX** | Developer experience — golden paths, IDP templates   | [GitHub](https://github.com/paruff/ufawkesdevx) |
-| **uFawkesAI**   | AI agent templates — golden path scaffolding         | [GitHub](https://github.com/paruff/ufawkesai)   |
+The previous README, with the setup steps, is in this repository's git
+history, before the commit that deprecated it. The suite plan is at
+[uFawkes.dev `docs/ai-sdlc/suite-release/`](https://github.com/paruff/uFawkes.dev/tree/main/docs/ai-sdlc/suite-release).
